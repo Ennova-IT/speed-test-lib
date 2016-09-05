@@ -22,6 +22,8 @@
       <h1>
 <a id="speed-test-library" class="anchor" href="#speed-test-library" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Speed Test library</h1>
 
+<p><a href="http://akinaru.github.io/speed-test-lib">http://akinaru.github.io/speed-test-lib</a></p>
+
 <p><a href="https://travis-ci.org/akinaru/speed-test-lib"><img src="https://travis-ci.org/akinaru/speed-test-lib.svg?branch=master" alt="Build Status"></a>
 <a href="https://bintray.com/akinaru/maven/speedtest/_latestVersion"><img src="https://api.bintray.com/packages/akinaru/maven/speedtest/images/download.svg" alt="Download"> </a>
 <a href="https://coveralls.io/github/akinaru/speed-test-lib?branch=master"><img src="https://coveralls.io/repos/github/akinaru/speed-test-lib/badge.svg?branch=master" alt="Coverage Status"></a>
@@ -54,7 +56,7 @@
 <li>with Gradle, from jcenter :</li>
 </ul>
 
-<pre><code>compile 'com.github.akinaru:speedtest:1.11'
+<pre><code>compile 'com.github.akinaru:speedtest:1.16'
 </code></pre>
 
 <h2>
@@ -385,6 +387,56 @@ speedTestSocket.startUpload("1.testdebit.info", 80, "/", 10000000);
 </code></pre>
 
 <h3>
+<a id="chain-downloadupload-requests" class="anchor" href="#chain-downloadupload-requests" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Chain download/upload requests</h3>
+
+<p>It is possible to chain download/upload requests with <code>startDownloadRepeat</code> &amp; <code>startUploadRepeat</code> API during a fixed time called <code>repeatWindow</code> with a report interval named <code>reportPeriodMillis</code></p>
+
+<ul>
+<li> chain download requests</li>
+</ul>
+
+<pre><code>/**
+ * Start repeat download task.
+ *
+ * @param hostname           server hostname
+ * @param port               server port
+ * @param uri                uri to fetch to download file
+ * @param repeatWindow       time window for the repeated download in milliseconds
+ * @param reportPeriodMillis time interval between each report in milliseconds
+ * @param repeatListener     listener for download repeat task completion &amp; reports
+ */
+public void startDownloadRepeat(final String hostname,
+                                final int port,
+                                final String uri,
+                                final int repeatWindow,
+                                final int reportPeriodMillis,
+                                final IRepeatListener repeatListener)
+</code></pre>
+
+<ul>
+<li>chain upload requests</li>
+</ul>
+
+<pre><code>/**
+ * Start repeat upload task.
+ *
+ * @param hostname           server hostname
+ * @param port               server port
+ * @param uri                uri to fetch to download file
+ * @param repeatWindow       time window for the repeated upload in milliseconds
+ * @param reportPeriodMillis time interval between each report in milliseconds
+ * @param repeatListener     listener for upload repeat task completion &amp; reports
+ */
+public void startUploadRepeat(final String hostname,
+                              final int port,
+                              final String uri,
+                              final int repeatWindow,
+                              final int reportPeriodMillis,
+                              final int fileSizeOctet,
+                              final IRepeatListener repeatListener)
+</code></pre>
+
+<h3>
 <a id="get-live-download--upload" class="anchor" href="#get-live-download--upload" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Get live download &amp; upload</h3>
 
 <ul>
@@ -484,7 +536,7 @@ speedTestSocket.startUpload("1.testdebit.info", 80, "/", 10000000);
 <h2>
 <a id="javadoc" class="anchor" href="#javadoc" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>JavaDoc</h2>
 
-<p><a href="http://akinaru.github.io/speed-test-lib">http://akinaru.github.io/speed-test-lib</a></p>
+<p><a href="https://oss.sonatype.org/service/local/repositories/releases/archive/com/github/akinaru/speedtest/1.11/speedtest-1.11-javadoc.jar/!/index.html">javadoc can be found here</a></p>
 
 <h2>
 <a id="features-examples" class="anchor" href="#features-examples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Features examples</h2>
@@ -526,6 +578,20 @@ speedTestSocket.startUpload("1.testdebit.info", 80, "/", 10000000);
 <pre><code>./gradlew repeatDownload
 </code></pre>
 
+<ul>
+<li>upload repeatedly a file during a fixed duration (size:1Mo, duration 11s, report interval: 1s)</li>
+</ul>
+
+<pre><code>./gradlew repeatUpload
+</code></pre>
+
+<ul>
+<li>successive 2 x (download + upload) repeatedly a file during a fixed duration (1 download size:1Mo, duration 3s, report interval: 1s following by 1 upload size:1Mo, duration 3s, report interval: 1s)</li>
+</ul>
+
+<pre><code>./gradlew repeatChain
+</code></pre>
+
 <h2>
 <a id="compatibility" class="anchor" href="#compatibility" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Compatibility</h2>
 
@@ -548,6 +614,14 @@ speedTestSocket.startUpload("1.testdebit.info", 80, "/", 10000000);
 
 <ul>
 <li><a href="https://testdebit.info/">https://testdebit.info/</a></li>
+</ul>
+
+<h2>
+<a id="tutorial" class="anchor" href="#tutorial" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tutorial</h2>
+
+<ul>
+<li>
+<a href="http://www.hirunawijesinghe.com/integrating-akinarus-speed-test-lib-into-android/">Tutorial on how to integrate Speed Test library into your project</a> by Hiruna Wijesinghe</li>
 </ul>
 
 <h2>
