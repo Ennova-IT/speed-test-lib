@@ -20,420 +20,260 @@
 
     <section class="main-content">
       <h1>
-<a id="speed-test-library" class="anchor" href="#speed-test-library" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Speed Test library</h1>
-
-<p><a href="http://akinaru.github.io/speed-test-lib">http://akinaru.github.io/speed-test-lib</a></p>
+<a id="jspeedtest" class="anchor" href="#jspeedtest" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>JSpeedTest</h1>
 
 <p><a href="https://travis-ci.org/akinaru/speed-test-lib"><img src="https://travis-ci.org/akinaru/speed-test-lib.svg?branch=master" alt="Build Status"></a>
 <a href="https://bintray.com/akinaru/maven/speedtest/_latestVersion"><img src="https://api.bintray.com/packages/akinaru/maven/speedtest/images/download.svg" alt="Download"> </a>
+<a href="https://maven-badges.herokuapp.com/maven-central/com.github.akinaru/speedtest"><img src="https://maven-badges.herokuapp.com/maven-central/com.github.akinaru/speedtest/badge.svg" alt="Maven Central"></a>
 <a href="https://coveralls.io/github/akinaru/speed-test-lib?branch=master"><img src="https://coveralls.io/repos/github/akinaru/speed-test-lib/badge.svg?branch=master" alt="Coverage Status"></a>
 <a href="https://www.codacy.com/app/kiruazoldik92/speed-test-lib?utm_source=github.com&amp;amp;utm_medium=referral&amp;amp;utm_content=akinaru/speed-test-lib&amp;amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/55e8e347e0d24566b37fe43799665e40" alt="Codacy Badge"></a>
 <a href="http://javadoc-badge.appspot.com/com.github.akinaru/speedtest"><img src="http://javadoc-badge.appspot.com/com.github.akinaru/speedtest.svg?label=javadoc" alt="Javadoc"></a>
 <a href="LICENSE.md"><img src="http://img.shields.io/:license-mit-blue.svg" alt="License"></a></p>
 
-<p>Speed Test library for Java / Android :</p>
+<p>Speed Test client library for Java/Android with HTTP &amp; FTP support</p>
 
 <ul>
-<li>speed test download with transfer rate output</li>
-<li>speed test upload with transfer rate output</li>
-<li>download and upload progress monitoring</li>
-<li>speed test server / port / uri can be configured easily</li>
+<li>speed test download</li>
+<li>speed test upload</li>
+<li>download / upload progress monitoring</li>
+<li>configurable hostname / port / uri (username &amp; password for FTP)</li>
+<li>configurable socket timeout and chunk size</li>
 </ul>
 
-<hr>
-
-<ul>
-<li>For download process, library will download file from given speed test server parameters and calculate transfer rate</li>
-<li>For upload process, library will generate a random file with a given size and will upload this file to a server calculating transfer rate</li>
-</ul>
-
-<p>No external file are required and no file are stored in Hard Disk.</p>
+<p>Check a <a href="./server_list.md">non-exhaustive list</a> of compatible speed test server.</p>
 
 <h2>
 <a id="include-in-your-project" class="anchor" href="#include-in-your-project" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Include in your project</h2>
 
 <ul>
-<li>with Gradle, from jcenter :</li>
+<li>with Gradle, from jcenter or mavenCentral :</li>
 </ul>
 
-<pre><code>compile 'com.github.akinaru:speedtest:1.16'
+<pre><code>compile 'com.github.akinaru:speedtest:1.21'
 </code></pre>
 
 <h2>
-<a id="how-to-use-" class="anchor" href="#how-to-use-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to use ?</h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
 
-<h4>
-<a id="instanciate-speedtest-class" class="anchor" href="#instanciate-speedtest-class" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Instanciate SpeedTest class</h4>
+<ul>
+<li>setup a speed test listener to monitor progress, completion and error catch :</li>
+</ul>
 
 <pre><code>SpeedTestSocket speedTestSocket = new SpeedTestSocket();
-</code></pre>
 
-<h4>
-<a id="add-a-listener-to-monitor" class="anchor" href="#add-a-listener-to-monitor" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Add a listener to monitor</h4>
-
-<ul>
-<li>download process result with <code>onDownloadPacketsReceived</code> callback</li>
-<li>upload process result with <code>onUploadPacketsReceived</code> callback</li>
-<li>download progress with <code>onDownloadProgress</code> callback</li>
-<li>upload progress with <code>onUploadProgress</code> callback</li>
-<li>download error catch with <code>onDownloadError</code>
-</li>
-<li>upload error catch with <code>onUploadError</code>
-</li>
-</ul>
-
-<pre><code>speedTestSocket.addSpeedTestListener(new ISpeedTestListener() {
-
-    @Override
-    public void onDownloadPacketsReceived(int packetSize, float transferRateBitPerSeconds, float transferRateOctetPerSeconds) {
-        System.out.println("download transfer rate  : " + transferRateBitPerSeconds + " bps");
-        System.out.println("download transfer rate  : " + transferRateOctetPerSeconds + "Bps");
-    }
-
-    @Override
-    public void onDownloadError(SpeedTestError errorCode, String message) {
-        System.out.println("Download error " + errorCode + " occured with message : " + message);
-    }
-
-    @Override
-    public void onUploadPacketsReceived(int packetSize, float transferRateBitPerSeconds, float transferRateOctetPerSeconds) {
-        System.out.println("download transfer rate  : " + transferRateBitPerSeconds + " bps");
-        System.out.println("download transfer rate  : " + transferRateOctetPerSeconds + "Bps");
-    }
-
-    @Override
-    public void onUploadError(SpeedTestError errorCode, String message) {
-        System.out.println("Upload error " + errorCode + " occured with message : " + message);
-    }
-
-    @Override
-    public void onDownloadProgress(float percent, SpeedTestReport downloadReport) {
-    }
-
-    @Override
-    public void onUploadProgress(float percent, SpeedTestReport uploadReport) {
-    }
-
-});
-
-</code></pre>
-
-<h4>
-<a id="start-download-speed-test" class="anchor" href="#start-download-speed-test" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Start Download speed test</h4>
-
-<p>Download a single file from a server : </p>
-
-<p><code>void startDownload(String hostname, int port, String uri)</code></p>
-
-<table>
-<thead>
-<tr>
-<th>params</th>
-<th>type</th>
-<th>description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>hostname</code></td>
-<td>String</td>
-<td>server hostname</td>
-</tr>
-<tr>
-<td><code>port</code></td>
-<td>int</td>
-<td>server port</td>
-</tr>
-<tr>
-<td><code>uri</code></td>
-<td>String</td>
-<td>uri to fetch your file from server</td>
-</tr>
-</tbody>
-</table>
-
-<pre><code>speedTestSocket.startDownload("ipv4.intuxication.testdebit.info", 80,"/fichiers/10Mo.dat");
-</code></pre>
-
-<p>You can wait for test completion with <code>closeSocketJoinRead()</code> which is prefered to <code>closeSocket()</code> since it join reading thread before resuming application.</p>
-
-<pre><code>speedTestSocket.closeSocketJoinRead();
-</code></pre>
-
-<h4>
-<a id="start-upload-speed-test" class="anchor" href="#start-upload-speed-test" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Start Upload speed test</h4>
-
-<p>Upload a single file with specified size to a server :</p>
-
-<pre><code>void startUpload(String hostname, int port, String uri, int fileSizeOctet)
-</code></pre>
-
-<table>
-<thead>
-<tr>
-<th>params</th>
-<th>type</th>
-<th>description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>hostname</code></td>
-<td>String</td>
-<td>server hostname</td>
-</tr>
-<tr>
-<td><code>port</code></td>
-<td>int</td>
-<td>server port</td>
-</tr>
-<tr>
-<td><code>uri</code></td>
-<td>String</td>
-<td>uri to fetch your file from server</td>
-</tr>
-<tr>
-<td><code>fileSizeOctet</code></td>
-<td>int</td>
-<td>the file size to be uploaded to server (file will be generated randomly and sent to speed test server)</td>
-</tr>
-</tbody>
-</table>
-
-<p>Here is an example for a file of 10Moctet :</p>
-
-<pre><code>speedTestSocket.startUpload("1.testdebit.info", 80, "/", 10000000);
-</code></pre>
-
-<h3>
-<a id="downloadupload-during-a-fix-amount-of-time" class="anchor" href="#downloadupload-during-a-fix-amount-of-time" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Download/Upload during a fix amount of time</h3>
-
-<p>If you want to download/upload during a fix value, you can begin download/upload and then invoke : </p>
-
-<pre><code>speedTestSocket.forceStopTask();
-</code></pre>
-
-<p>The following will start downloading a file of 100Mo but will stop downloading 15 seconds later : </p>
-
-<pre><code>final Timer timer = new Timer();
-
-/* instanciate speed test */
-final SpeedTestSocket speedTestSocket = new SpeedTestSocket();
-
-/* add a listener to wait for speed test completion and progress */
+// add a listener to wait for speedtest completion and progress
 speedTestSocket.addSpeedTestListener(new ISpeedTestListener() {
 
     @Override
-    public void onDownloadPacketsReceived(long packetSize, float transferRateBitPerSeconds, float transferRateOctetPerSeconds) {
+    public void onDownloadFinished(SpeedTestReport report) {
+        // called when download is finished
+        System.out.println("[DL FINISHED] rate in octet/s : " + report.getTransferRateOctet());
+        System.out.println("[DL FINISHED] rate in bit/s   : " + report.getTransferRateBit());
     }
 
     @Override
     public void onDownloadError(SpeedTestError speedTestError, String errorMessage) {
-        if (speedTestError != SpeedTestError.FORCE_CLOSE_SOCKET) {
-            if (timer != null) {
-                timer.purge();
-                timer.cancel();
-            }
-        }
+         // called when a download error occur
     }
 
     @Override
-    public void onUploadPacketsReceived(long packetSize, float transferRateBitPerSeconds, float transferRateOctetPerSeconds) {
+    public void onUploadFinished(SpeedTestReport report) {
+        // called when an upload is finished
+        System.out.println("[UL FINISHED] rate in octet/s : " + report.getTransferRateOctet());
+        System.out.println("[UL FINISHED] rate in bit/s   : " + report.getTransferRateBit());
     }
 
     @Override
     public void onUploadError(SpeedTestError speedTestError, String errorMessage) {
-        if (speedTestError != SpeedTestError.FORCE_CLOSE_SOCKET) {
-            if (timer != null) {
-                timer.purge();
-                timer.cancel();
-            }
-        }
+        // called when an upload error occur
     }
 
     @Override
-    public void onDownloadProgress(float percent, SpeedTestReport downloadReport) {
+    public void onDownloadProgress(float percent, SpeedTestReport report) {
+        // called to notify download progress
+        System.out.println("[DL PROGRESS] progress : " + percent + "%");
+        System.out.println("[DL PROGRESS] rate in octet/s : " + report.getTransferRateOctet());
+        System.out.println("[DL PROGRESS] rate in bit/s   : " + report.getTransferRateBit());
     }
 
     @Override
-    public void onUploadProgress(float percent, SpeedTestReport uploadReport) {
+    public void onUploadProgress(float percent, SpeedTestReport report) {
+        // called to notify upload progress
+        System.out.println("[UL PROGRESS] progress : " + percent + "%");
+        System.out.println("[UL PROGRESS] rate in octet/s : " + report.getTransferRateOctet());
+        System.out.println("[UL PROGRESS] rate in bit/s   : " + report.getTransferRateBit());
+    }
+
+    @Override
+    public void onInterruption() {
+        // triggered when forceStopTask is called
     }
 });
-
-TimerTask stopTask = new TimerTask() {
-    @Override
-    public void run() {
-        System.out.println("--------------- FINISH REPORT -----------------------------");
-        SpeedTestReport downloadReport = speedTestSocket.getLiveDownloadReport();
-        System.out.println("---------------current download report--------------------");
-        System.out.println("progress             : " + downloadReport.getProgressPercent() + "%");
-        System.out.println("transfer rate bit    : " + downloadReport.getTransferRateBit() + "b/s");
-        System.out.println("transfer rate octet  : " + downloadReport.getTransferRateOctet() + "B/s");
-        System.out.println("downloaded for now   : " + downloadReport.getTemporaryPacketSize() + "/" + downloadReport.getTotalPacketSize());
-        if (downloadReport.getStartTime() &gt; 0) {
-            System.out.println("amount of time       : " + ((downloadReport.getReportTime() - downloadReport.getStartTime()) / 1000) + "s");
-        }
-        speedTestSocket.forceStopTask();
-        if (timer != null) {
-            timer.cancel();
-            timer.purge();
-        }
-    }
-};
-timer.schedule(stopTask, 15000);
-speedTestSocket.startDownload("1.testdebit.info", 80, "/fichiers/100Mo.dat");
-
 </code></pre>
 
 <h3>
-<a id="default-report-interval" class="anchor" href="#default-report-interval" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Default report interval</h3>
-
-<p>By default, progress report is achieved as following :</p>
+<a id="download" class="anchor" href="#download" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Download</h3>
 
 <ul>
-<li><p>for upload, a progress report is sent and trigger <code>onUploadProgress</code> each time <code>uploadChunkSize</code> number of packet is sent. The default value for <code>uploadChunkSize</code> is 65535 but you can change with <code>speedTestSocket.setUploadChunkSize(int chunkSize)</code></p></li>
-<li><p>for download, a progress report is sent and trigger <code>onDownloadProgress</code> each time a chunk of data is read from the downlink socket</p></li>
+<li>HTTP download 1Mo from <code>2.testdebit.info</code>
+</li>
 </ul>
 
+<pre><code>speedTestSocket.startDownload("2.testdebit.info", "/fichiers/1Mo.dat");
+</code></pre>
+
+<ul>
+<li>FTP download 1Mo from <code>speedtest.tele2.net</code>
+</li>
+</ul>
+
+<pre><code>speedTestSocket.startFtpDownload("speedtest.tele2.net", "/1MB.zip");
+</code></pre>
+
 <h3>
-<a id="set-your-own-report-interval" class="anchor" href="#set-your-own-report-interval" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Set your own report interval</h3>
+<a id="upload" class="anchor" href="#upload" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Upload</h3>
 
-<p>If you want to set a custom report interval, you can use a task scheduled at fixed rate to retrieve report with <code>speedTestSocket.getLiveDownloadReport()</code> or <code>speedTestSocket.getLiveUploadReport()</code> depending if you want download or upload report.</p>
+<ul>
+<li>HTTP upload 1Mo to <code>2.testdebit.info</code>
+</li>
+</ul>
 
-<p>The following will start uploading a file of 10Mo and request reports every 400ms :</p>
+<pre><code>speedTestSocket.startUpload("2.testdebit.info", "/", 1000000);
+</code></pre>
 
-<pre><code>final Timer timer = new Timer();
+<ul>
+<li>FTP upload a 1Mo file to <code>speedtest.tele2.net</code>
+</li>
+</ul>
 
-/* instanciate speed test */
-final SpeedTestSocket speedTestSocket = new SpeedTestSocket();
+<pre><code>String fileName = SpeedTestUtils.generateFileName() + ".txt";
+speedTestSocket.startFtpUpload("speedtest.tele2.net", "/upload/" + fileName, 1000000);
+</code></pre>
 
-/* add a listener to wait for speed test completion and progress */
-speedTestSocket.addSpeedTestListener(new ISpeedTestListener() {
+<h3>
+<a id="fixed-duration-download" class="anchor" href="#fixed-duration-download" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed duration download</h3>
 
-    @Override
-    public void onDownloadPacketsReceived(long packetSize, float transferRateBitPerSeconds, float transferRateOctetPerSeconds) {
-    }
+<p>Download during a fixed duration. Download will be stopped when the max duration is reached.
+At the end of the max duration, <code>onInterruption</code> is called if download has not be fully completed</p>
 
-    @Override
-    public void onDownloadError(SpeedTestError speedTestError, String errorMessage) {
-        if (speedTestError != SpeedTestError.FORCE_CLOSE_SOCKET) {
-            if (timer != null) {
-                timer.purge();
-                timer.cancel();
-            }
-        }
-    }
+<ul>
+<li>HTTP download for 10s max, a 100 Mo file from <code>2.testdebit.info</code>
+</li>
+</ul>
 
-    @Override
-    public void onUploadPacketsReceived(long packetSize, float transferRateBitPerSeconds, float transferRateOctetPerSeconds) {
-    }
+<pre><code>speedTestSocket.startFixedDownload("2.testdebit.info", "/fichiers/100Mo.dat", 10000);
+</code></pre>
 
-    @Override
-    public void onUploadError(SpeedTestError speedTestError, String errorMessage) {
-        if (speedTestError != SpeedTestError.FORCE_CLOSE_SOCKET) {
-            if (timer != null) {
-                timer.purge();
-                timer.cancel();
-            }
-        }
-    }
+<ul>
+<li>FTP download for 10s max, a 100 Mo file from <code>speedtest.tele2.net</code>
+</li>
+</ul>
 
-    @Override
-    public void onDownloadProgress(float percent, SpeedTestReport downloadReport) {
-    }
+<pre><code>speedTestSocket.startFtpFixedDownload("speedtest.tele2.net", "/100MB.zip");
+</code></pre>
 
-    @Override
-    public void onUploadProgress(float percent, SpeedTestReport uploadReport) {
-    }
-});
+<h3>
+<a id="fixed-duration-upload" class="anchor" href="#fixed-duration-upload" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed duration Upload</h3>
 
-TimerTask task = new TimerTask() {
+<p>Upload during a fixed duration. Upload will be stopped when the max duration is reached
+At the end of the max duration, <code>onInterruption</code> is called if upload has not be fully completed</p>
 
-    @Override
-    public void run() {
+<ul>
+<li>HTTP upload for 10s max, a 10Mo file to <code>2.testdebit.info</code>
+</li>
+</ul>
 
-        if (speedTestSocket.getSpeedTestMode() == SpeedTestMode.UPLOAD) {
+<pre><code>speedTestSocket.startFixedUpload("2.testdebit.info", "/", 10000000, 10000);
+</code></pre>
 
-            SpeedTestReport uploadReport = speedTestSocket.getLiveUploadReport();
-            System.out.println("---------------current upload report--------------------");
-            System.out.println("progress             : " + uploadReport.getProgressPercent() + "%");
-            System.out.println("transfer rate bit    : " + uploadReport.getTransferRateBit() + "b/s");
-            System.out.println("transfer rate octet  : " + uploadReport.getTransferRateOctet() + "B/s");
-            System.out.println("uploaded for now     : " + uploadReport.getTemporaryPacketSize() 
-                                    + "/" + uploadReport.getTotalPacketSize());
-            System.out.println("amount of time       : " + 
-                                ((uploadReport.getReportTime() - uploadReport.getStartTime()) / 1000) + "s");
-            System.out.println("--------------------------------------------------------");
+<ul>
+<li>FTP upload for 10s max, a 10Mo file to <code>speedtest.tele2.net</code>
+</li>
+</ul>
 
-        } else if (speedTestSocket.getSpeedTestMode() == SpeedTestMode.DOWNLOAD) {
+<pre><code>String fileName = SpeedTestUtils.generateFileName() + ".txt";
+speedTestSocket.startFtpFixedUpload("speedtest.tele2.net", "/upload/" + fileName, 10000000, 10000);
+</code></pre>
 
-            SpeedTestReport downloadReport = speedTestSocket.getLiveDownloadReport();
-            System.out.println("---------------current download report--------------------");
-            System.out.println("progress             : " + downloadReport.getProgressPercent() + "%");
-            System.out.println("transfer rate bit    : " + downloadReport.getTransferRateBit() + "b/s");
-            System.out.println("transfer rate octet  : " + downloadReport.getTransferRateOctet() + "B/s");
-            System.out.println("downloaded for now   : " + downloadReport.getTemporaryPacketSize() 
-                                    + "/" + downloadReport.getTotalPacketSize());
-            System.out.println("amount of time       : "
-                                    + ((downloadReport.getReportTime() - downloadReport.getStartTime()) / 1000) + "s");
-        }
-    }
-};
+<h3>
+<a id="define-report-interval" class="anchor" href="#define-report-interval" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Define report interval</h3>
 
-// scheduling the task at interval
-timer.scheduleAtFixedRate(task, 0, 400);
+<p>You can define your own report interval (interval between each <code>onDownloadProgress</code> &amp; <code>onUploadProgress</code>) in milliseconds.</p>
 
-speedTestSocket.startUpload("1.testdebit.info", 80, "/", 10000000);
+<ul>
+<li>HTTP download with download reports each 1.5 seconds</li>
+</ul>
+
+<pre><code>speedTestSocket.startDownload("2.testdebit.info", "/fichiers/1Mo.dat", 1500);
+</code></pre>
+
+<ul>
+<li>FTP download with download reports each 1.5 seconds</li>
+</ul>
+
+<pre><code>speedTestSocket.startFtpDownload("speedtest.tele2.net", "/1MB.zip", 1500);
+</code></pre>
+
+<ul>
+<li>HTTP upload with upload reports each 1.5 seconds</li>
+</ul>
+
+<pre><code>speedTestSocket.startUpload("2.testdebit.info", "/", 10000000, 1500);
+</code></pre>
+
+<ul>
+<li>FTP upload with upload reports each 1.5 seconds</li>
+</ul>
+
+<pre><code>String fileName = SpeedTestUtils.generateFileName() + ".txt";
+speedTestSocket.startFtpUpload("speedtest.tele2.net", "/upload/" + fileName, 10000000, 1500);
 </code></pre>
 
 <h3>
 <a id="chain-downloadupload-requests" class="anchor" href="#chain-downloadupload-requests" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Chain download/upload requests</h3>
 
-<p>It is possible to chain download/upload requests with <code>startDownloadRepeat</code> &amp; <code>startUploadRepeat</code> API during a fixed time called <code>repeatWindow</code> with a report interval named <code>reportPeriodMillis</code></p>
+<p>You can chain multiple download/upload requests during a fixed duration. This way, there will be as much download/upload request until the end of the period</p>
 
 <ul>
-<li> chain download requests</li>
+<li>download repeat</li>
 </ul>
 
-<pre><code>/**
- * Start repeat download task.
- *
- * @param hostname           server hostname
- * @param port               server port
- * @param uri                uri to fetch to download file
- * @param repeatWindow       time window for the repeated download in milliseconds
- * @param reportPeriodMillis time interval between each report in milliseconds
- * @param repeatListener     listener for download repeat task completion &amp; reports
- */
-public void startDownloadRepeat(final String hostname,
-                                final int port,
-                                final String uri,
-                                final int repeatWindow,
-                                final int reportPeriodMillis,
-                                final IRepeatListener repeatListener)
+<p>The following will download regularly for 20 seconds a file of 1Mo with download report each 2 seconds. Download reports will appear in <code>onReport</code> callback of <code>IRepeatListener</code> instead of <code>onDownloadProgress</code> :</p>
+
+<pre><code>speedTestSocket.startDownloadRepeat("2.testdebit.info", "/fichiers/1Mo.dat",
+    20000, 2000, new
+            IRepeatListener() {
+                @Override
+                public void onFinish(final SpeedTestReport report) {
+                    // called when repeat task is finished
+                }
+
+                @Override
+                public void onReport(final SpeedTestReport report) {
+                    // called when a download report is dispatched
+                }
+            });
 </code></pre>
 
 <ul>
-<li>chain upload requests</li>
+<li>upload repeat</li>
 </ul>
 
-<pre><code>/**
- * Start repeat upload task.
- *
- * @param hostname           server hostname
- * @param port               server port
- * @param uri                uri to fetch to download file
- * @param repeatWindow       time window for the repeated upload in milliseconds
- * @param reportPeriodMillis time interval between each report in milliseconds
- * @param repeatListener     listener for upload repeat task completion &amp; reports
- */
-public void startUploadRepeat(final String hostname,
-                              final int port,
-                              final String uri,
-                              final int repeatWindow,
-                              final int reportPeriodMillis,
-                              final int fileSizeOctet,
-                              final IRepeatListener repeatListener)
+<p>The following will upload regularly for 20 seconds a file of 1Mo with download report each 2 seconds. Upload reports will appear in <code>onReport</code> callback of <code>IRepeatListener</code> instead of <code>onUploadProgress</code> :</p>
+
+<pre><code>speedTestSocket.startUploadRepeat("2.testdebit.info", "/", 1000000
+    20000, 2000, new
+            IRepeatListener() {
+                @Override
+                public void onFinish(final SpeedTestReport report) {
+                    // called when repeat task is finished
+                }
+
+                @Override
+                public void onReport(final SpeedTestReport report) {
+                    // called when an upload report is dispatched
+                }
+            });
 </code></pre>
 
 <h3>
@@ -467,6 +307,29 @@ public void startUploadRepeat(final String hostname,
 <pre><code>speedTestSocket.setSocketTimeout(5000);
 </code></pre>
 
+<h3>
+<a id="set-transfer-rate-precision" class="anchor" href="#set-transfer-rate-precision" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Set transfer rate precision</h3>
+
+<p>These settings are used to alter transfer rate float rounding / scale :</p>
+
+<ul>
+<li>set RoundingMode :</li>
+</ul>
+
+<pre><code>speedTestSocket.setDefaultRoundingMode(RoundingMode.HALF_EVEN);
+</code></pre>
+
+<p>Default <code>RoundingMode</code> used for transfer rate calculation is <code>HALF_EVEN</code>. It can be override with : </p>
+
+<ul>
+<li>set Scale :</li>
+</ul>
+
+<pre><code>speedTestSocket.setDefaultScale(4);
+</code></pre>
+
+<p>Default scale used for transfer rate calculation is 4</p>
+
 <h2>
 <a id="android-integration" class="anchor" href="#android-integration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Android Integration</h2>
 
@@ -487,44 +350,57 @@ public void startUploadRepeat(final String hostname,
     protected String doInBackground(Void... params) {
 
         SpeedTestSocket speedTestSocket = new SpeedTestSocket();
+
+        // add a listener to wait for speedtest completion and progress
         speedTestSocket.addSpeedTestListener(new ISpeedTestListener() {
 
             @Override
-            public void onDownloadPacketsReceived(int packetSize, 
-                                                float transferRateBitPerSeconds, 
-                                                float transferRateOctetPerSeconds) {
-                Log.i("speed-test-app","download transfer rate  : " + transferRateOctetPerSeconds + "Bps");
+            public void onDownloadFinished(SpeedTestReport report) {
+                // called when download is finished
+                Log.v("speedtest", "[DL FINISHED] rate in octet/s : " + report.getTransferRateOctet());
+                Log.v("speedtest", "[DL FINISHED] rate in bit/s   : " + report.getTransferRateBit());
             }
 
             @Override
-            public void onDownloadError(SpeedTestError errorCode, String message) {
-                Log.i("speed-test-app","Download error " + errorCode + " occured with message : " + message);
+            public void onDownloadError(SpeedTestError speedTestError, String errorMessage) {
+                // called when a download error occur
             }
 
             @Override
-            public void onUploadPacketsReceived(int packetSize, 
-                                                float transferRateBitPerSeconds, 
-                                                float transferRateOctetPerSeconds) {
-                Log.i("speed-test-app","download transfer rate  : " + transferRateOctetPerSeconds + "Bps");
+            public void onUploadFinished(SpeedTestReport report) {
+                // called when an upload is finished
+                Log.v("speedtest", "[UL FINISHED] rate in octet/s : " + report.getTransferRateOctet());
+                Log.v("speedtest", "[UL FINISHED] rate in bit/s   : " + report.getTransferRateBit());
             }
 
             @Override
-            public void onUploadError(SpeedTestError errorCode, String message) {
-                Log.i("speed-test-app","Upload error " + errorCode + " occured with message : " + message);
+            public void onUploadError(SpeedTestError speedTestError, String errorMessage) {
+                // called when an upload error occur
             }
 
             @Override
-            public void onDownloadProgress(float percent,SpeedTestReport downloadReport) {
+            public void onDownloadProgress(float percent, SpeedTestReport report) {
+                // called to notify download progress
+                Log.v("speedtest", "[DL PROGRESS] progress : " + percent + "%");
+                Log.v("speedtest", "[DL PROGRESS] rate in octet/s : " + report.getTransferRateOctet());
+                Log.v("speedtest", "[DL PROGRESS] rate in bit/s   : " + report.getTransferRateBit());
             }
 
             @Override
-            public void onUploadProgress(float percent,SpeedTestReport uploadReport) {
+            public void onUploadProgress(float percent, SpeedTestReport report) {
+                // called to notify upload progress
+                Log.v("speedtest", "[UL PROGRESS] progress : " + percent + "%");
+                Log.v("speedtest", "[UL PROGRESS] rate in octet/s : " + report.getTransferRateOctet());
+                Log.v("speedtest", "[UL PROGRESS] rate in bit/s   : " + report.getTransferRateBit());
             }
 
+            @Override
+            public void onInterruption() {
+                // triggered when forceStopTask is called
+            }
         });
 
-        speedTestSocket.startUpload("1.testdebit.info", 
-                                    80, "/", 10000000); //will block until upload is finished
+        speedTestSocket.startDownload("2.testdebit.info", "/fichiers/1Mo.dat");
 
         return null;
     }
@@ -534,27 +410,36 @@ public void startUploadRepeat(final String hostname,
 <p>Execute it with : <code>new SpeedTestTask().execute();</code></p>
 
 <h2>
-<a id="javadoc" class="anchor" href="#javadoc" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>JavaDoc</h2>
-
-<p><a href="https://oss.sonatype.org/service/local/repositories/releases/archive/com/github/akinaru/speedtest/1.11/speedtest-1.11-javadoc.jar/!/index.html">javadoc can be found here</a></p>
-
-<h2>
 <a id="features-examples" class="anchor" href="#features-examples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Features examples</h2>
 
-<p>All following examples use speed test server <code>1.testdebit.info</code></p>
+<p>All following examples use speed test server <code>1.testdebit.info</code> for HTTP and <code>speedtest.tele2.net</code> for FTP</p>
 
 <ul>
-<li>download (10Mo)</li>
+<li>HTTP download (1Mo)</li>
 </ul>
 
-<pre><code>./gradlew download
+<pre><code>./gradlew downloadFile
 </code></pre>
 
 <ul>
-<li>upload (10Mo)</li>
+<li>HTTP upload (1Mo)</li>
 </ul>
 
-<pre><code>./gradlew upload
+<pre><code>./gradlew uploadFile
+</code></pre>
+
+<ul>
+<li>FTP download (1Mo)</li>
+</ul>
+
+<pre><code>./gradlew downloadFTP
+</code></pre>
+
+<ul>
+<li>FTP upload (1Mo)</li>
+</ul>
+
+<pre><code>./gradlew uploadFTP
 </code></pre>
 
 <ul>
@@ -593,35 +478,62 @@ public void startUploadRepeat(final String hostname,
 </code></pre>
 
 <h2>
+<a id="speed-test-issues" class="anchor" href="#speed-test-issues" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Speed Test issues</h2>
+
+<p>It's important to choose an adequate speed test server depending on latency/jitter. This library is <strong>not</strong> responsible for the speed test server choice.</p>
+
+<p>Note that this library :</p>
+
+<ul>
+<li>doesn't adjust the chunk size depending on the connection speed either</li>
+<li>doesn't provide pre-estimation of the connection speed based on small chunk sent to/from server</li>
+<li>doesn't detect anomaly either (for instance taking away X% slowest chunk and X% fastest chunk downloaded)</li>
+</ul>
+
+<p>This library does provide an average of transfer rate for all individual chunks read/written for download/upload.</p>
+
+<p>The 2 following links describe the process of speedtest.net :</p>
+
+<ul>
+<li><a href="http://www.ookla.com/support/a21110547/what-is-the-test-flow-and-methodology-for-the-speedtest">http://www.ookla.com/support/a21110547/what-is-the-test-flow-and-methodology-for-the-speedtest</a></li>
+<li><a href="https://support.speedtest.net/hc/en-us/articles/203845400-How-does-the-test-itself-work-How-is-the-result-calculated-">https://support.speedtest.net/hc/en-us/articles/203845400-How-does-the-test-itself-work-How-is-the-result-calculated-</a></li>
+</ul>
+
+<h2>
 <a id="compatibility" class="anchor" href="#compatibility" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Compatibility</h2>
 
 <p>JRE 1.7 compliant</p>
 
 <h2>
-<a id="build" class="anchor" href="#build" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Build</h2>
+<a id="build--test" class="anchor" href="#build--test" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Build &amp; test</h2>
 
-<p>Gradle using IntelliJ IDEA or Eclipse</p>
+<ul>
+<li>build without test :</li>
+</ul>
+
+<pre><code>./gradlew clean build -x test
+</code></pre>
+
+<ul>
+<li>build with test :</li>
+</ul>
+
+<pre><code>./gradlew clean build
+</code></pre>
+
+<ul>
+<li>run specific test</li>
+</ul>
+
+<pre><code>./gradlew test --tests "fr.bmartel.speedtest.test.SpeedTestFunctionalTest"
+</code></pre>
 
 <h2>
 <a id="external-libraries" class="anchor" href="#external-libraries" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>External libraries</h2>
 
 <ul>
-<li><a href="https://github.com/akinaru/http-endec">https://github.com/akinaru/http-endec</a></li>
-</ul>
-
-<h2>
-<a id="speedtest-server-tested" class="anchor" href="#speedtest-server-tested" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SpeedTest Server tested</h2>
-
-<ul>
-<li><a href="https://testdebit.info/">https://testdebit.info/</a></li>
-</ul>
-
-<h2>
-<a id="tutorial" class="anchor" href="#tutorial" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tutorial</h2>
-
-<ul>
-<li>
-<a href="http://www.hirunawijesinghe.com/integrating-akinarus-speed-test-lib-into-android/">Tutorial on how to integrate Speed Test library into your project</a> by Hiruna Wijesinghe</li>
+<li><a href="https://github.com/akinaru/http-endec">http-endec</a></li>
+<li><a href="https://commons.apache.org/proper/commons-net/">Apache Commons Net</a></li>
 </ul>
 
 <h2>
