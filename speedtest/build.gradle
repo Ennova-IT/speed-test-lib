@@ -1,22 +1,25 @@
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.android.library'
+//apply from: 'https://raw.githubusercontent.com/JeroenMols/GitAsMaven/master/publish-bitbucket.gradle'
 
-group 'com.github.akinaru'
-version '1.23'
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
 
-apply plugin: 'java'
-apply plugin: 'pmd'
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
 
-sourceCompatibility = 1.7
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-pmd {
-    toolVersion = '5.3.2'
-    ruleSets = []
-    ruleSetFiles = files('config/pmd/rulesets.xml')
-}
-
-repositories {
-    mavenCentral()
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
 }
 
 dependencies {
@@ -25,128 +28,4 @@ dependencies {
     testCompile 'junit:junit:4.11'
     testCompile 'net.jodah:concurrentunit:0.4.2'
     testCompile 'com.googlecode.json-simple:json-simple:1.1.1'
-}
-
-def siteUrl = 'https://github.com/akinaru/speed-test-lib'
-def gitUrl = 'https://github.com/akinaru/speed-test-lib.git'
-
-bintray {
-    user = "$System.env.BINTRAY_USER"
-    key = "$System.env.BINTRAY_KEY"
-
-    configurations = ['archives'] //When uploading configuration files
-
-    dryRun = false //Whether to run this as dry-run, without deploying
-    publish = true //If version should be auto published after an upload
-
-    pkg {
-        repo = 'maven'
-        name = 'speedtest'
-        desc = 'Speed Test library for Java/Android'
-        websiteUrl = siteUrl
-        issueTrackerUrl = 'https://github.com/akinaru/speed-test-lib/issues'
-        vcsUrl = gitUrl
-        licenses = ['MIT']
-        labels = ['speed-test', 'speedtest']
-        publicDownloadNumbers = true
-
-        version {
-            name = project.version //Bintray logical version name
-            vcsTag = project.version
-
-            gpg {
-                sign = true
-                passphrase = "$System.env.GPG_PASSPHRASE"
-            }
-
-            mavenCentralSync {
-                sync = true
-                //Optional (true by default). Determines whether to sync the version to Maven Central.
-                user = "$System.env.MAVEN_CENTRAL_USER_TOKEN" //OSS user token
-                password = "$System.env.MAVEN_CENTRAL_PASSWORD" //OSS user password
-                close = '1'
-                //Optional property. By default the staging repository is closed and artifacts are released to Maven Central. You can optionally turn this behaviour off (by puting 0 as value) and release the version manually.
-            }
-        }
-    }
-}
-
-install {
-    repositories.mavenInstaller {
-        pom {
-            project {
-                description 'Speed Test library for Java/Android'
-                packaging 'jar'
-                name 'speedtest-lib'
-                url siteUrl
-                licenses {
-                    license {
-                        name 'The MIT License'
-                        url 'https://github.com/akinaru/speed-test-lib/blob/master/LICENSE.md'
-                    }
-                }
-                developers {
-                    developer {
-                        id 'akinaru'
-                        name 'Bertrand Martel'
-                        email 'kiruazoldik92@gmail.com'
-                    }
-                }
-                scm {
-                    connection 'https://github.com/akinaru/speed-test-lib.git'
-                    developerConnection 'https://github.com/akinaru/speed-test-lib.git'
-                    url siteUrl
-                }
-            }
-            whenConfigured {
-                p ->
-                    p.dependencies = p.dependencies.findAll {
-                        dep -> (dep.artifactId.notIn(["junit", "concurrentunit", "json-simple"]))
-                    }
-            }
-        }
-    }
-}
-
-Object.metaClass.notIn = { Object collection ->
-    !(delegate in collection)
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives javadocJar
-    archives sourcesJar
-}
-
-task findConventions << {
-    println project.getConvention()
-}
-
-task generateJavadoc(type: Javadoc) {
-    source = sourceSets.main.allJava
-    classpath = configurations.compile
-    destinationDir = file("./doc/")
-}
-
-compileJava {
-    options.encoding = 'UTF-8'
-    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-}
-
-compileTestJava {
-    options.encoding = 'UTF-8'
-    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-}
-
-test {
-    testLogging.showStandardStreams = true
 }

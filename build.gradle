@@ -5,50 +5,19 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.1.0'
-        classpath 'org.jacoco:org.jacoco.core:0.7.5.201505241946'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.3'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0'
+        classpath 'com.android.tools.build:gradle:2.3.0-beta1'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
 
 allprojects {
-    apply plugin: 'base'
-    apply plugin: 'jacoco'
-    apply plugin: 'com.github.kt3k.coveralls'
-
     repositories {
         jcenter()
-    }
-
-    jacoco {
-        toolVersion = '0.7.1.201405082137'
+        maven { url "https://jitpack.io" }
     }
 }
 
-subprojects {
-    apply plugin: 'java'
-
-    jacocoTestReport {
-        reports {
-            html.enabled = true
-            xml.enabled = true
-            csv.enabled = false
-        }
-    }
-}
-
-task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
-    dependsOn = subprojects.test
-    sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
-    classDirectories =  files(subprojects.sourceSets.main.output)
-    executionData = files(subprojects.jacocoTestReport.executionData)
-    reports {
-        html.enabled = true
-        xml.enabled = true
-        csv.enabled = false
-        xml.destination = "${buildDir}/reports/jacoco/examples/jacocoTestReport.xml"
-    }
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }
